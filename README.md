@@ -61,36 +61,26 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
 ## Browser Compatibility
 #### Desktop
   - Target evergreen browsers `ie >= 11`
-  - Target modern browsers `ie >= 10` if it is necessary for a project
+  - Target modern browsers `ie >= 10`? (need to check this) if it is necessary for a project
   - Avoid targeting older browsers `ie < 10` if at all possible
-  - Edge > 14
-  - Firefox > 52
-  - Chrome > 58
-  - Safari > 10
+  - Edge >= 14
+  - Firefox > 52 (46/48 -> acceptance tests)
+  - Chrome > 58 
+  - Safari >= 10.1
 
-#### Tablet
-  ##### iOS
+#### Tablet & Mobile
+  ##### iOS (>=10)
   
-  - Safari
-  - Chrome
-  - Firefox
+  - Safari >= 10.3
+  - Chrome (See Safari up to iOS 10)
+  - Firefox (See Safari up to iOS 10)
+  - Recheck with iOS 11!
   
-  ##### Android
+  ##### Android (>= 4.5)
   
-  - Chrome
-  - Firefox
-
-#### Mobile
-  ##### iOS
-  
-  - Safari
-  - Chrome
-  - Firefox
-  
-  ##### Android
-  
-  - Chrome
-  - Firefox
+  - Android Browser >= 56 (Default Chrome)
+  - Chrome (Same as desktop)
+  - Firefox (Same as desktop)
 
 
 **[top](#table-of-contents)**
@@ -98,8 +88,8 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
 ## Files
   - All TypeScript files must have a ".ts" extension.
   - They should be all lower case, and only include letters, numbers, and periods.
-  - It is OK (even recommended) to separate words with periods (e.g. `search.component.ts`).
-  - Separation of similar items within is done with hyphens (e.g. `search-input.component.ts`)
+  - Separation of architectural description is done with periods (e.g. `search.component.ts`).
+  - Separation of words is done with hyphens (e.g. `search-input.component.ts`)
   - **All files should end in a new line.** This is necessary for some Unix systems.
 
 **[top](#table-of-contents)**
@@ -112,35 +102,46 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
 **[top](#table-of-contents)**
 
 ## Line Length
-  - Lines must not be longer than 140 characters.
-  - When a statement runs over 140 characters on a line, it should be broken up, ideally after a comma or operator.
+  - Lines must not be longer than 100 characters.
+  - When a statement runs over 100 characters on a line, it should be broken up, ideally after a comma or operator.
 
 **[top](#table-of-contents)**
 
 ## Quotes
   - Use single-quotes `''` for all strings, and use double-quotes `""` for strings within strings.
+  - For multiple lines we use `` (backticks) 
 
   ```typescript
   // bad
-  let greeting = "Hello World!";
+  let greeting: string = "Hello World!";
 
   // good
-  let greeting = 'Hello World!';
+  let greeting: string = 'Hello World!';
 
   // bad
-  let html = "<div class='bold'>Hello World</div>";
+  let html: string = "<div class='bold'>Hello World</div>";
 
   // bad
-  let html = '<div class=\'bold\'>Hello World</div>';
+  let html: string = '<div class=\'bold\'>Hello World</div>';
 
   // good
-  let html = '<div class="bold">Hello World</div>';
+  let html: string = '<div class="bold">Hello World</div>';
+  
+  // bad
+  let multiLine: string = 'this \
+                          is a multiline \
+                          string';
+  
+  // good
+  let multiLine: string = `this
+                           is a multiline
+                           string`;
   ```
 
 **[top](#table-of-contents)**
 
 ## Comments
-  - Comments are strongly encouraged. It is very useful to be able to read comments and understand the intentions of a given block of code.
+  - Comments are discouraged. The intent of strict typing is to be more descriptive and to make the use of comments obsolete.
   - Comments need to be clear, just like the code they are annotating.
   - Make sure your comments are meaningful.
 
@@ -148,9 +149,10 @@ The following example is a case where a comment is completely erroneous, and can
 
   ```typescript
   // Set index to zero.
-  let index = 0;
+  let index: number = 0;
   ```
-
+Maybe not JSDOC, look at this later!
+Not that usefull in TS..
   - All public functions must have a comment block `/**...*/` using [JSDoc](http://usejsdoc.org/) style comments.
 
 JSDocs can be interpreted by IDEs for better intellisense. Below is an example of a JSDoc comment block for a function.
@@ -215,6 +217,8 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 ### Inline
 
   - Inline comments are comments inside of complex statements (loops, functions, etc).
+  - Descriptive namings should be encouraged at all times.
+  - Only when very strange cases occur & you feel some outsider might need help in understanding what you wrote.
   - Use `//` for all inline comments.
   - Keep comments clear and concise.
   - Place inline comments on a newline above the line they are annotating
@@ -254,8 +258,8 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
 `TODO` and `XXX` annotations help you quickly find things that need to be fixed/implemented.
 
-  - Use `// TODO:` to annotate solutions that need to be implemented.
-  - Use `// XXX:` to annotate problems the need to be fixed.
+  - Use `// TODO:` to annotate solutions that need to be implemented with a (Git/Syntax) name.
+  - Use `// XXX:` to annotate problems that need to be fixed.
   - It is best to write code that doesn't need `TODO` and `XXX` annotations, but sometimes it is unavoidable.
 
 **[top](#table-of-contents)**
@@ -268,12 +272,12 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   // bad
   console.log(a + b);
 
-  let a = 2,
-      b = 4;
+  let a: number = 2,
+      b: number = 4;
 
   // good
-  let a = 2,
-      b = 4;
+  let a: number = 2,
+      b: number = 4;
 
   console.log(a + b);
   ```
@@ -289,31 +293,48 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
       return a + b + c;
   }
+  
+  // bad
+  function add(a: number, b: number): number {
+      // c is on the global scope!
+      let c: number = 6;
+  
+      return a + b + c;
+    }
   ```
 
   - Use one `let` keyword to define a block of variables.
-  - Declare each variable on a newline.
+  - Use one `let` keyword per declaration of a variable.
+  - Place each declaration of a variable on a newline.
 
   ```typescript
   // bad
-  let a = 2;
-  let b = 2;
-  let c = 4;
-
+  let a: number = 2,
+      b: number = 2,
+      c: number = 4;
+  
   // good
-  let a = 2,
-      b = 2,
-      c = 4;
-
+  let a: number = 2;
+  let b: number = 2;
+  let c: number = 4;
+  
   // bad
   // b will be defined on global scope.
   let a = b = 2, c = 4;
+  
+  // bad
+  let a: number, b: Array<string>, c: object;
+    
+  // good
+  let a: number,
+      b: Array<string>,
+      c: object;
   ```
 
 ## Function Declarations
 
   - All functions must be declared before they are used.
-  - Any closure functions should be defined right after the let declarations.
+  - Any closure functions should be defined right after the `let` declarations.
 
   ```typescript
   // bad
@@ -347,14 +368,14 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   function foo (){
       // ...
   }
-
+  
   // good
   function foo() {
       // ...
   }
   ```
 
-  - The body of the function should be indented 4 spaces.
+  - The body of the function should be indented with 4 spaces.
   - The right curly brace `}` should be on a new line.
   - The right curly brace `}` should be aligned with the line containing the left curly brace `{` that begins the function statement.
 
@@ -362,7 +383,7 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   // bad
   function foo(): string {
     return 'foo';}
-
+  
   // good
   function foo(): string {
       return 'foo';
@@ -375,12 +396,12 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
   ```typescript
   // bad
-  function greet(name:string) {
+  function greet(name:string) :string {
     // ...
   }
-
+  
   // good
-  function greet(name: string) {
+  function greet(name: string): string {
     // ...
   }
   ```
@@ -391,6 +412,26 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
   - All anonymous functions should be defined as fat-arrow/lambda `() => { }` functions unless it is absolutely necessary to preserve the context in the function body.
   - All fat-arrow/lambda functions should have parenthesis `()` around the function parameters.
+  - Even if there is only 1 parameter, always use parenthesis.
+  - There should be a space between the right parenthesis `)` and the `=>`
+  - There should be a space between the `=>` and the left curly brace `{` that begins the statement body.
+  - The statement body should be indented 4 spaces.
+  - The right curly brace `}` should be on a new line.
+  - The right curly brace `}` should be aligned with the line containing the  left curly brace `{` that begins the function statement.
+  
+  ```typescript
+  // bad
+  element.addEventListener('click', (ev: Event)=>{alert('foo');});
+  
+  // good
+  element.addEventListener('click', (ev: Event) => {
+      alert('foo');
+  });
+  ```
+  
+  The interesting thing to note is that the `this` value (internally) is not actually bound to the arrow function. 
+  Normal functions in JavaScript bind their own `this` value, however the `this` value used in arrow functions is actually fetched lexically from the scope it sits inside. 
+  It has no `this`, so when you use `this` you’re talking to the outer scope.
 
   ```typescript
   // bad
@@ -418,28 +459,11 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   }
   ```
 
-  - There should be a space between the right parenthesis `)` and the `=>`
-  - There should be a space between the `=>` and the left curly brace `{` that begins the statement body.
-
-  ```typescript
-  // bad
-  element.addEventListener('click', (ev: Event)=>{alert('foo');});
-
-  // good
-  element.addEventListener('click', (ev: Event) => {
-      alert('foo');
-  });
-  ```
-
-  - The statement body should be indented 4 spaces.
-  - The right curly brace `}` should be on a new line.
-  - The right curly brace `}` should be aligned with the line containing the  left curly brace `{` that begins the function statement.
-
 **[top](#table-of-contents)**
 
 ## Names
 
-  - All variable and function names should be formed with alphanumeric `A-Z, a-z, 0-9` and underscore `_` charcters.
+  - All variable and function names should be formed with alphabetic characters `A-Z, a-z`.
 
 ### Variables, Modules, and Functions
 
@@ -447,9 +471,9 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
 ### Use of var, let, and const
 
-  - Use `const` where appropriate, for values that should never change
-  - Use `let` everywhere else
-  - Avoid using `var`
+  - Use `const` where appropriate, for values that should never change.
+  - Use `let` everywhere else.
+  - Never use `var`!
 
 **[top](#table-of-contents)**
 
@@ -459,15 +483,17 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   - Always define the return type of functions.
   - Types should be used whenever necessary (no implicit `any`).
   - Arrays should be defined as `Array<type>` instead of `type[]`.
-  - Use the `any` type sparingly, it is always better to define an interface.
+  - Some types don't have a 'shorter' syntax, so we go for consistency.
+  - Use the `any` type sparingly (as in never), it is always better to define an interface.
 
+// TODO double check with CW
   ```typescript
   // bad
   let numbers = [];
-
+    
   // bad
   let numbers: number[] = [];
-
+  
   // good
   let numbers: Array<number> = [];
   ```
@@ -479,8 +505,8 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   - Classes/Constructors should use UpperCamelCase (PascalCase).
   - `Private` and `private static` members in classes should be denoted with the `private` keyword.
   - `Protected` members in classes do not use the `private` keyword.
-  - Default to using `protected` for all instance members
-  - Use `private` instance members sparingly
+  - Default to using `protected` for all instance members.
+  - Use `private` instance members sparingly.
   - Use `public` instance members only when they are used by other parts of the application.
 
   ```typescript
@@ -638,19 +664,19 @@ It appears the intention of the above code is to return if `condition === true`,
   function getHighestNumber(a: number, b: number): number {
       let out = b;
 
-      if(a >= b) {
+      if (a >= b) {
           out = a;
       }
-
+  
       return out;
   }
 
   // good
   function getHighestNumber(a: number, b: number): number {
-      if(a >= b) {
+      if (a >= b) {
           return a;
       }
-
+  
       return b;
   }
   ```
@@ -695,13 +721,13 @@ If statements should take the following form:
   if (/* condition */) {
       // ...
   }
-
+  
   if (/* condition */) {
       // ...
   } else {
       // ...
   }
-
+  
   if (/* condition */) {
       // ...
   } else if (/* condition */) {
@@ -709,6 +735,9 @@ If statements should take the following form:
   } else {
       // ...
   }
+  
+  //TODO switch case here.
+  
   ```
 
 **[top](#table-of-contents)**
@@ -718,14 +747,14 @@ If statements should take the following form:
 For statements should have the following form:
 
   ```typescript
-  for(/* initialization */; /* condition */; /* update */) {
+  for (/* initialization */; /* condition */; /* update */) {
       // ...
   }
 
   let keys = Object.keys(/* object */),
       length = keys.length;
 
-  for(let i = 0; i < length; ++i) {
+  for (let i = 0; i < length; i++) {
       // ...
   }
   ```
@@ -778,6 +807,7 @@ Switch statements should have the following form:
   ```
 
   - Each switch group except default should end with `break`, `return`, or `throw`.
+  - Each switch group should have a default.
 
 **[top](#table-of-contents)**
 
@@ -872,12 +902,12 @@ Blank lines improve code readability by allowing the developer to logically grou
 
   ```typescript
   // bad
-  for(let i = 0;i < 10;++i) {
+  for (let i = 0;i < 10;i++) {
       // ...
   }
 
   // good
-  for(let i = 0; i < 10; ++i) {
+  for (let i = 0; i < 10; i++) {
       // ...
   }
   ```
@@ -915,6 +945,7 @@ Blank lines improve code readability by allowing the developer to logically grou
 
   - It is better to use `===` and `!==` operators whenever possible.
   - `==` and `!=` operators do type coercion, which can lead to headaches when debugging code.
+  // TODO typescript does type coercion?
 
 **[top](#table-of-contents)**
 
@@ -930,17 +961,18 @@ Blank lines improve code readability by allowing the developer to logically grou
 
   - Create declaration files `.d.ts` for your interfaces instead of putting them in your `.ts` files
   - Let the TypeScript compiler infer as much as possible
-  - Avoid defining types when it is unnecessary
+  - Never avoid defining types when it is unnecessary
 
   ```typescript
   // bad
-  let a: number = 2;
-
-  // good
   let a = 2;
+  
+  // good
+  let a: number = 2;
   ```
 
   - Always define the return type of functions, this helps to make sure that functions always return the correct type
+  - When the function is not returning anything, then you should use `: void`
 
   ```typescript
   // bad
@@ -966,17 +998,67 @@ Blank lines improve code readability by allowing the developer to logically grou
 
 ## TSLint
 
+  Linting your code is very helpful for preventing minor issues that can escape the eye during development. We use TSLint (written by Palantir) for our linter.
+  
+  - TSLint: https://github.com/palantir/tslint
   - Always use a Linter
 
-Linting your code is very helpful for preventing minor issues that can escape the eye during development. We use TSLint (written by Palantir) for our linter.
+### Max Line Length
 
-  - TSLint: https://github.com/palantir/tslint
-  - Our [tslint.json](https://github.com/Platypi/style_typescript/blob/master/tslint.json)
+  - When defining parameters, use separate lines when exceeding `max-line-length` of 100
+
+  ```typescript
+  class Person {
+      protected fullName: string;
+
+      constructor(
+          public firstName: string, 
+          public lastName: string,
+      ) {
+          this.fullName = firstName + ' ' + lastName;
+      }
+
+      toString() {
+          return this.fullName;
+      }
+
+      protected walkFor(millis: number) {
+          console.log(this.fullName + ' is now walking.');
+
+          // Wait for millis milliseconds to stop walking
+          setTimeout(() => {
+              console.log(this.fullName + ' has stopped walking.');
+          }, millis);
+      }
+  }
+  ```
+  
+### Trailing Comma
+
+  - When creating objects or Array or any case of separation, use trailing comma's
+
+  ```typescript
+  let person: object = {
+    name: 'Stefan',
+    home: 'Berlin',
+  };
+  
+  let personTwo: Array<string> = [
+      'Chris',
+      'Berlin',
+  ];
+  ```  
+
+  - Our [tslint.json](https://github.com/MBing/typescript_styleguide/blob/master/tslint.json)
+  
+
+**[top](#table-of-contents)**
+
 
 ## License
 (The MIT License)
 
-Copyright (c) 2014 Platypi, LLC
+Copyright (c) 2017 Contorion, GMBH
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
