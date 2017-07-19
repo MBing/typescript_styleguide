@@ -1002,6 +1002,7 @@ Blank lines improve code readability by allowing the developer to logically grou
   
   - TSLint: https://github.com/palantir/tslint
   - Always use a Linter
+  - Our [tslint.json](https://github.com/MBing/typescript_styleguide/blob/master/tslint.json)
 
 ### Max Line Length
 
@@ -1047,10 +1048,7 @@ Blank lines improve code readability by allowing the developer to logically grou
       'Chris',
       'Berlin',
   ];
-  ```  
-
-  - Our [tslint.json](https://github.com/MBing/typescript_styleguide/blob/master/tslint.json)
-  
+  ```    
 
 **[top](#table-of-contents)**
 
