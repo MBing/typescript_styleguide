@@ -61,8 +61,12 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
 ## Browser Compatibility
 #### Desktop
   - Target evergreen browsers `ie >= 11`
-  - Target modern browsers `ie >= 9` if it is necessary for a project
-  - Avoid targeting older browsers `ie < 9` if at all possible
+  - Target modern browsers `ie >= 10` if it is necessary for a project
+  - Avoid targeting older browsers `ie < 10` if at all possible
+  - Edge > 14
+  - Firefox > 52
+  - Chrome > 58
+  - Safari > 10
 
 #### Tablet
   ##### iOS
@@ -94,7 +98,8 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
 ## Files
   - All TypeScript files must have a ".ts" extension.
   - They should be all lower case, and only include letters, numbers, and periods.
-  - It is OK (even recommended) to separate words with periods (e.g. `my.view.html`).
+  - It is OK (even recommended) to separate words with periods (e.g. `search.component.ts`).
+  - Separation of similar items within is done with hyphens (e.g. `search-input.component.ts`)
   - **All files should end in a new line.** This is necessary for some Unix systems.
 
 **[top](#table-of-contents)**
