@@ -46,6 +46,9 @@ This is the TypeScript style guide that we use internally at Contorion! It is *s
   0. [=== and !== Operators](#===-and-!==-Operators)
   0. [Eval](#eval)
   0. [TSLint](#tslint)
+      0. [Max Line Length](#max-line-length)
+      0. [Trailing Comma](#trailing-comma)
+      0. [Import](#import)
   0. [License](#license)
 
 ## Introduction
@@ -1048,7 +1051,24 @@ Blank lines improve code readability by allowing the developer to logically grou
       'Chris',
       'Berlin',
   ];
-  ```    
+  ```
+
+### Import
+  
+  - When making an import, watch out for the max line length
+  - To assure more readability, we list the imports on new lines when there are >= 3
+  
+  ```typescript
+  // bad
+  import { ITouchExtended, NavigationService, navigationService } from '../services/navigation.service';
+  
+  // good
+  import { 
+    ITouchExtended,
+    NavigationService,
+    navigationService,
+  } from '../services/navigation.service';
+  ```
 
 **[top](#table-of-contents)**
 
