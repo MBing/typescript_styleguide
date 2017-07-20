@@ -46,9 +46,10 @@ This is the TypeScript style guide that we use internally at Contorion! It is *s
   0. [=== and !== Operators](#===-and-!==-Operators)
   0. [Eval](#eval)
   0. [TSLint](#tslint)
-      0. [Max Line Length](#max-line-length)
-      0. [Trailing Comma](#trailing-comma)
-      0. [Import](#import)
+    0. [Max Line Length](#max-line-length)
+    0. [Trailing Comma](#trailing-comma)
+    0. [Import](#import)
+    0. [Conditional Import](#conditional-import)
   0. [License](#license)
 
 ## Introduction
@@ -1068,6 +1069,34 @@ Blank lines improve code readability by allowing the developer to logically grou
     NavigationService,
     navigationService,
   } from '../services/navigation.service';
+  ```
+  
+### Conditional Import
+
+  - When conditionally importing the first module instantiation we need to add the `webpackChunkname`.
+  - We add a `webpackChunkname` to easily debug and retrieve the used module.
+  - This might also have cause the crashing of Webkit. 
+  
+  ```typescript
+  // bad
+  if (navigationElements.length) {
+    import ('./components/navigation.component')
+        .then(({ NavigationComponent }) => {
+            navigationElements.forEach((navigationElement) => {
+                <Component> NavigationComponent.loadByElement(navigationElement);
+            });
+        });
+  }
+  
+  // good
+  if (navigationElements.length) {
+      import (/* webpackChunkName: "navigation" */ './components/navigation.component')
+          .then(({ NavigationComponent }) => {
+              navigationElements.forEach((navigationElement) => {
+                  <Component> NavigationComponent.loadByElement(navigationElement);
+              });
+          });
+  }
   ```
 
 **[top](#table-of-contents)**
