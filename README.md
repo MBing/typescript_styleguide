@@ -51,7 +51,6 @@ This is the TypeScript style guide that we use internally at Contorion! It is *s
   0. [Conditional Import](#conditional-import)
   0. [Eval](#eval)
   0. [TSLint](#tslint)
-    0. [Max Line Length](#max-line-length)
     0. [Trailing Comma](#trailing-comma)
   0. [License](#license)
 
