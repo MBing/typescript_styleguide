@@ -9,7 +9,7 @@ This is the TypeScript style guide that we use internally at Contorion! It is *s
   0. [Browser Compatibility](#browser-compatibility)
   0. [Files](#files)
   0. [Indentation](#indentation)
-  0. [Line Length](#line-length)
+  0. [Max Line Length](#max-line-length)
   0. [Quotes](#quotes)
   0. [Comments](#comments)
     0. [Class](#class)
@@ -32,6 +32,8 @@ This is the TypeScript style guide that we use internally at Contorion! It is *s
     0. [Return](#return)
     0. [If](#if)
     0. [For](#for)
+    0. [For..in](#for-in)
+    0. [For..of](#for-of)
     0. [While](#while)
     0. [Do While](#do-while)
     0. [Switch](#switch)
@@ -66,7 +68,8 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
 ## Browser Compatibility
 #### Desktop
   - Target evergreen browsers `ie >= 11`
-  - Target modern browsers `ie >= 10`? (need to check this) if it is necessary for a project
+  - Target modern browsers `ie >= 10`
+  - IE 10 Should just work..
   - Avoid targeting older browsers `ie < 10` if at all possible
   - Edge >= 14
   - Firefox > 52 (46/48 -> acceptance tests)
@@ -106,9 +109,37 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
 
 **[top](#table-of-contents)**
 
-## Line Length
+### Max Line Length
+
   - Lines must not be longer than 100 characters.
   - When a statement runs over 100 characters on a line, it should be broken up, ideally after a comma or operator.
+  - When defining parameters, use separate lines when exceeding `max-line-length` of 100
+
+  ```typescript
+  class Person {
+      protected fullName: string;
+
+      constructor(
+          public firstName: string,
+          public lastName: string,
+      ) {
+          this.fullName = firstName + ' ' + lastName;
+      }
+
+      toString() {
+          return this.fullName;
+      }
+
+      protected walkFor(millis: number) {
+          console.log(this.fullName + ' is now walking.');
+
+          // Wait for millis milliseconds to stop walking
+          setTimeout(() => {
+              console.log(this.fullName + ' has stopped walking.');
+          }, millis);
+      }
+  }
+  ```
 
 **[top](#table-of-contents)**
 
@@ -150,69 +181,32 @@ For that purpose, we need to make sure we adhere to the same coding conventions 
   - Comments need to be clear, just like the code they are annotating.
   - Make sure your comments are meaningful.
 
-The following example is a case where a comment is completely erroneous, and can actually make the code harder to read.
+The following example is a case where a comment is completely useless, and can actually make the code harder to read.
 
   ```typescript
   // Set index to zero.
   let index: number = 0;
   ```
-Maybe not JSDOC, look at this later!
-Not that usefull in TS..
-  - All public functions must have a comment block `/**...*/` using [JSDoc](http://usejsdoc.org/) style comments.
-
-JSDocs can be interpreted by IDEs for better intellisense. Below is an example of a JSDoc comment block for a function.
-
-  ```typescript
-  /**
-   * Takes in a name and returns a greeting string.
-   *
-   * @param name The name of the greeted person.
-   */
-  function getGreeting(name: string): string {
-      return 'Hello ' + name + '!';
-  }
-  ```
 
 ### Class
 
-  - All classes must have block comments `/**...*/` for all public variables and functions.
-  - All public functions should use [JSDoc](http://usejsdoc.org/) style comments.
-  - Functions need to have a comment explaining what the function does, and all of the input parameters need to be annotated with `@param`.
-  - The class should include a block comment containing the description of the class
-  - The constructor should contain a JSDoc comment annotating any input parameters.
+  - As Typescript is already very descriptive and has types everywhere, nothing like [JSDoc](http://usejsdoc.org/) is used!
+  - Be descriptive in naming variables, classes, methods so there is no need of (block) comments.
 
   ```typescript
-  /**
-   * Contains properties of a Person.
-   */
   class Person {
-      /**
-       * Returns a new Person with the specified name.
-       *
-       * @param name The name of the new Person.
-       */
       static GetPerson(name: string): Person {
           return new Person(name);
       }
 
-      /**
-       * @param name The name of the new Person.
-       */
       constructor(public name: string) { }
 
-      /**
-       * Instructs this Person to walk for a certain amount
-       * of time.
-       *
-       * @param millis The number of milliseconds the Person
-       * should walk.
-       */
-      walkFor(millis: number): void {
+      walkFor(milliseconds: number): void {
           console.log(this.name + ' is now walking.');
 
           setTimeout(() => {
               console.log(this.name + ' has stopped walking.');
-          }, millis);
+          }, milliseconds);
       }
   }
   ```
@@ -263,8 +257,9 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
 `TODO` and `XXX` annotations help you quickly find things that need to be fixed/implemented.
 
-  - Use `// TODO:` to annotate solutions that need to be implemented with a (Git/Syntax) name.
-  - Use `// XXX:` to annotate problems that need to be fixed.
+  - Use `// TODO` to annotate solutions that need to be implemented.
+  - It is recommended to use `// TODO` in combination with a (Git/Syntax) name.
+  - Use `// XXX` to annotate problems that need to be fixed.
   - It is best to write code that doesn't need `TODO` and `XXX` annotations, but sometimes it is unavoidable.
 
 **[top](#table-of-contents)**
@@ -281,8 +276,8 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
       b: number = 4;
 
   // good
-  let a: number = 2,
-      b: number = 4;
+  let a: number = 2;
+  let b: number = 4;
 
   console.log(a + b);
   ```
@@ -331,9 +326,9 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   let a: number, b: Array<string>, c: object;
     
   // good
-  let a: number,
-      b: Array<string>,
-      c: object;
+  let a: number;
+  let b: Array<string>;
+  let c: object;
   ```
 
 ## Function Declarations
@@ -411,6 +406,21 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   }
   ```
 
+  - Always add a function return type even when there i.
+
+  ```typescript
+    // bad
+    function greet(name:string) {
+      // ...
+    }
+
+    // good
+    function greet(name: string): void {
+      // ...
+    }
+  ```
+
+
 **[top](#table-of-contents)**
 
 ### Anonymous Functions
@@ -468,7 +478,8 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
 ## Names
 
-  - All variable and function names should be formed with alphabetic characters `A-Z, a-z`.
+  - All variable, function, class names should be formed with alphabetic characters `A-Z, a-z`.
+  - We use UPPER_SNAKE_CASE for the global constants.
 
 ### Variables, Modules, and Functions
 
@@ -486,12 +497,11 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
   - Always favor type inference over explicit type declaration except for function return types
   - Always define the return type of functions.
-  - Types should be used whenever necessary (no implicit `any`).
+  - Types should be used (no implicit `any`).
   - Arrays should be defined as `Array<type>` instead of `type[]`.
   - Some types don't have a 'shorter' syntax, so we go for consistency.
-  - Use the `any` type sparingly (as in never), it is always better to define an interface.
+  - Never use the `any` type, it is always better to define an interface.
 
-// TODO double check with CW
   ```typescript
   // bad
   let numbers = [];
@@ -516,6 +526,7 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
   - Use `private` instance members sparingly.
   - Use `public` instance members only when they are used by other parts of the application.
   - Order of preference is followed like Robert C. Martin (Uncle Bob) advises coders to always put member variables at the top of the class (constants first, then private members) and methods should be ordered in such a way so that they read like a story that doesn't cause the reader to need to jump around the code too much. This is a more sensible way to organize code rather than by access modifier.
+  - All public methods are right after the constructor. (As stated by TSLint recommendation rules)
 
   ```typescript
   class Person {
@@ -586,8 +597,9 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 
 ### Constants
 
-  - All constants should use UPPER_SNAKE_CASE.
-  - All constants you be defined with the `const` keyword.
+  - All global constants should use UPPER_SNAKE_CASE.
+  - All local constants should use regular variable naming.
+  - All constants should be defined with the `const` keyword.
 
 **[top](#table-of-contents)**
 
@@ -691,7 +703,8 @@ It appears the intention of the above code is to return if `condition === true`,
   return 'Hello World!';
   ```
 
-  - It is recommended to take a return-first approach whenever possible.
+  - It is recommended to take a return early approach whenever possible.
+
 
   ```typescript
   // bad
@@ -716,6 +729,7 @@ It appears the intention of the above code is to return if `condition === true`,
   ```
 
   - Always **explicitly define a return type**. This can help TypeScript validate that you are always returning something that matches the correct type.
+  - When there is nothing to return use `: void`.
 
   ```typescript
   // bad
@@ -726,6 +740,16 @@ It appears the intention of the above code is to return if `condition === true`,
   // good
   function getPerson(name: string): Person {
       return new Person(name);
+  }
+
+  // bad
+  function greet(name:string) {
+    // ...
+  }
+
+  // good
+  function greet(name: string): void {
+    // ...
   }
   ```
 
@@ -747,7 +771,7 @@ It appears the intention of the above code is to return if `condition === true`,
   }
   ```
 
-Sometimes simply checking falsy/truthy values is fine, but the general approach is to be explicit with what you are looking for. This can prevent a lot of unncessary bugs.
+Sometimes simply checking falsy/truthy values is fine, but the general approach is to be explicit with what you are looking for. This can prevent a lot of unnecessary bugs.
 
 If statements should take the following form:
 
@@ -761,7 +785,13 @@ If statements should take the following form:
   } else {
       // ...
   }
-  
+  ```
+
+  - When you need an `else if` then you should always use a switch statement instead.
+  - If the switch is not easy because of the conditional, then you should find a way to make this work.
+
+  ```typescript
+  // bad
   if (/* condition */) {
       // ...
   } else if (/* condition */) {
@@ -769,16 +799,22 @@ If statements should take the following form:
   } else {
       // ...
   }
-  
-  //TODO switch case here.
-  
+
+  // good
+  switch (/* expression */) {
+      case /* expression */:
+          // ...
+          /* termination */
+      default:
+          // ...
+  }
   ```
 
 **[top](#table-of-contents)**
 
 ### For
 
-For statements should have the following form:
+For statements are discouraged should have the following form:
 
   ```typescript
   for (/* initialization */; /* condition */; /* update */) {
@@ -796,6 +832,36 @@ For statements should have the following form:
 Object.prototype.keys is supported in `ie >= 9`.
 
   - Use Object.prototype.keys in lieu of a `for...in` statement.
+
+**[top](#table-of-contents)**
+
+### For in
+
+For..in statemenst are strongly encouraged have the following form:
+
+  ```typescript
+  let list = [4, 5, 6];
+
+  for (let i in list) {
+      console.log(entry);
+      // "0", "1", "2"
+  }
+  ```
+
+**[top](#table-of-contents)**
+
+### For of
+
+For..of statements are strongly encouraged and have the following form:
+
+  ```typescript
+  let list = [4, 5, 6];
+
+  for (let i of list) {
+      console.log(entry);
+      // "4", "5", "6"
+  }
+  ```
 
 **[top](#table-of-contents)**
 
@@ -979,7 +1045,6 @@ Blank lines improve code readability by allowing the developer to logically grou
 
   - It is better to use `===` and `!==` operators whenever possible.
   - `==` and `!=` operators do type coercion, which can lead to headaches when debugging code.
-  // TODO typescript does type coercion?
 
 **[top](#table-of-contents)**
 
@@ -1088,36 +1153,6 @@ Blank lines improve code readability by allowing the developer to logically grou
   - TSLint: https://github.com/palantir/tslint
   - Always use a Linter
   - Our [tslint.json](https://github.com/MBing/typescript_styleguide/blob/master/tslint.json)
-
-### Max Line Length
-
-  - When defining parameters, use separate lines when exceeding `max-line-length` of 100
-
-  ```typescript
-  class Person {
-      protected fullName: string;
-
-      constructor(
-          public firstName: string, 
-          public lastName: string,
-      ) {
-          this.fullName = firstName + ' ' + lastName;
-      }
-
-      toString() {
-          return this.fullName;
-      }
-
-      protected walkFor(millis: number) {
-          console.log(this.fullName + ' is now walking.');
-
-          // Wait for millis milliseconds to stop walking
-          setTimeout(() => {
-              console.log(this.fullName + ' has stopped walking.');
-          }, millis);
-      }
-  }
-  ```
   
 ### Trailing Comma
 
@@ -1142,6 +1177,10 @@ Blank lines improve code readability by allowing the developer to logically grou
 (The MIT License)
 
 Copyright (c) 2017 Contorion, GMBH
+
+This Styleguide is an enhanced & strongly modified version of: [Platypi Typescript Styleguide](https://github.com/Platypi/style_typescript)
+
+Copyright (c) 2014 Platypi, LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
