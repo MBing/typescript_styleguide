@@ -23,6 +23,7 @@ This is the TypeScript style guide that we use internally at Contorion! It is *s
     0. [Use of var, let, and const](#use-of-var-let-and-const)
     0. [Types](#types)
     0. [Classes](#classes)
+    0. [Class extends Native Class](#class-extends-native-class)
     0. [Interfaces](#interfaces)
     0. [Constants](#constants)
   0. [Statements](#statements)
@@ -44,12 +45,12 @@ This is the TypeScript style guide that we use internally at Contorion! It is *s
     0. [External](#external)
     0. [Internal](#internal)
   0. [=== and !== Operators](#===-and-!==-Operators)
+  0. [Import](#import)
+  0. [Conditional Import](#conditional-import)
   0. [Eval](#eval)
   0. [TSLint](#tslint)
     0. [Max Line Length](#max-line-length)
     0. [Trailing Comma](#trailing-comma)
-    0. [Import](#import)
-    0. [Conditional Import](#conditional-import)
   0. [License](#license)
 
 ## Introduction
@@ -507,11 +508,14 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
 ### Classes
 
   - Classes/Constructors should use UpperCamelCase (PascalCase).
+  - Opening `{` should be on the same line as the class declaration.
+  - Closing `}` should be vertically aligned with the declaration of the class.
   - `Private` and `private static` members in classes should be denoted with the `private` keyword.
   - `Protected` members in classes do not use the `private` keyword.
   - Default to using `protected` for all instance members.
   - Use `private` instance members sparingly.
   - Use `public` instance members only when they are used by other parts of the application.
+  - Order of preference is followed like Robert C. Martin (Uncle Bob) advises coders to always put member variables at the top of the class (constants first, then private members) and methods should be ordered in such a way so that they read like a story that doesn't cause the reader to need to jump around the code too much. This is a more sensible way to organize code rather than by access modifier.
 
   ```typescript
   class Person {
@@ -531,6 +535,32 @@ JSDocs can be interpreted by IDEs for better intellisense. Below is an example o
           // Wait for millis milliseconds to stop walking
           setTimeout(() => {
               console.log(this.fullName + ' has stopped walking.');
+          }, millis);
+      }
+  }
+  ```
+
+**[top](#table-of-contents)**
+
+### Class extends Native class
+
+  - When a `Class` extends from a Native class, there is no import as this is native functionality.
+  - To clarify what native classes are available, you can find all of them here: [Lib ES6 TS](https://github.com/Microsoft/TypeScript/blob/master/lib/lib.es6.d.ts)
+  - These are available and automatically recognised by all proper IDE's by default. (_e.g. [WebStorm](https://www.jetbrains.com/webstorm/), [MS Visual Studio](https://www.visualstudio.com/)_)
+
+  ```typescript
+  class Person extends Touch {
+      static GetPerson(name: string): Person {
+          return new Person(name);
+      }
+
+      constructor(public name: string) { }
+
+      walkFor(millis: number): void {
+          console.log(this.name + ' is now walking.');
+
+          setTimeout(() => {
+              console.log(this.name + ' has stopped walking.');
           }, millis);
       }
   }
@@ -953,6 +983,57 @@ Blank lines improve code readability by allowing the developer to logically grou
 
 **[top](#table-of-contents)**
 
+
+## Import
+  
+  - When making an import, watch out for the max line length
+  - To assure more readability, we list the imports on new lines when there are >= 3
+  
+  ```typescript
+  // bad
+  import { ITouchExtended, NavigationService, navigationService } from '../services/navigation.service';
+  
+  // good
+  import { 
+    ITouchExtended,
+    NavigationService,
+    navigationService,
+  } from '../services/navigation.service';
+  ```
+  
+**[top](#table-of-contents)**
+
+  
+## Conditional Import
+
+  - When conditionally importing the first module instantiation we need to add the `webpackChunkname`.
+  - We add a `webpackChunkname` to easily debug and retrieve the used module.
+  - This might also have cause the crashing of Webkit. 
+  
+  ```typescript
+  // bad
+  if (navigationElements.length) {
+    import ('./components/navigation.component')
+        .then(({ NavigationComponent }) => {
+            navigationElements.forEach((navigationElement) => {
+                <Component> NavigationComponent.loadByElement(navigationElement);
+            });
+        });
+  }
+  
+  // good
+  if (navigationElements.length) {
+      import (/* webpackChunkName: "navigation" */ './components/navigation.component')
+          .then(({ NavigationComponent }) => {
+              navigationElements.forEach((navigationElement) => {
+                  <Component> NavigationComponent.loadByElement(navigationElement);
+              });
+          });
+  }
+  ```
+
+**[top](#table-of-contents)**  
+
 ## Typings
 
 ### External
@@ -1052,51 +1133,6 @@ Blank lines improve code readability by allowing the developer to logically grou
       'Chris',
       'Berlin',
   ];
-  ```
-
-### Import
-  
-  - When making an import, watch out for the max line length
-  - To assure more readability, we list the imports on new lines when there are >= 3
-  
-  ```typescript
-  // bad
-  import { ITouchExtended, NavigationService, navigationService } from '../services/navigation.service';
-  
-  // good
-  import { 
-    ITouchExtended,
-    NavigationService,
-    navigationService,
-  } from '../services/navigation.service';
-  ```
-  
-### Conditional Import
-
-  - When conditionally importing the first module instantiation we need to add the `webpackChunkname`.
-  - We add a `webpackChunkname` to easily debug and retrieve the used module.
-  - This might also have cause the crashing of Webkit. 
-  
-  ```typescript
-  // bad
-  if (navigationElements.length) {
-    import ('./components/navigation.component')
-        .then(({ NavigationComponent }) => {
-            navigationElements.forEach((navigationElement) => {
-                <Component> NavigationComponent.loadByElement(navigationElement);
-            });
-        });
-  }
-  
-  // good
-  if (navigationElements.length) {
-      import (/* webpackChunkName: "navigation" */ './components/navigation.component')
-          .then(({ NavigationComponent }) => {
-              navigationElements.forEach((navigationElement) => {
-                  <Component> NavigationComponent.loadByElement(navigationElement);
-              });
-          });
-  }
   ```
 
 **[top](#table-of-contents)**
