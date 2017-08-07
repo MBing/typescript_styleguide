@@ -905,7 +905,7 @@ Switch statements should have the following form:
   }
   ```
 
-  - Each switch group except default should end with `break`, `return`, or `throw`.
+  - Each switch group should end with `break`, `return`, or `throw`.
   - Each switch group should have a default.
 
 **[top](#table-of-contents)**
@@ -919,13 +919,13 @@ Try statements should have the following form:
   ```typescript
   try {
       // ...
-  } catch (error: Error) {
+  } catch (error) {
       // ...
   }
 
   try {
       // ...
-  } catch (error: Error) {
+  } catch (error) {
       // ...
   } finally {
       // ...
